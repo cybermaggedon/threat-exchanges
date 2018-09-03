@@ -20,6 +20,14 @@ convert to detector format:
 $ ./openioc-to-detector > fireeye.json
 ```
 
+# abuse.ch
+
+Collection of malware trackers.
+
+```
+$ ./abusech-to-detector > abusech.json
+```
+
 # Facebook
 
 The file `facebook-creds` contains an API secret, which is taken from the

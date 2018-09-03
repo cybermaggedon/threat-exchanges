@@ -1,0 +1,62 @@
+#!/usr/bin/env python3
+
+import blacklist
+import json
+
+
+url = "https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist"
+b = blacklist.Blacklist()
+b.read_from_url(url)
+iocs = b.to_detector(source=url, author="abuse.ch", description="Zeus botnet")
+
+
+url = "https://zeustracker.abuse.ch/blocklist.php?download=ipblocklist"
+b = blacklist.Blacklist()
+b.read_from_url(url)
+iocs2 = b.to_detector(source=url, author="abuse.ch", type="ipv4",
+                      match="string", description="Zeus botnet")
+iocs["definitions"].extend(iocs2["definitions"])
+
+url = "https://zeustracker.abuse.ch/blocklist.php?download=compromised"
+b = blacklist.Blacklist()
+b.read_from_url(url)
+iocs2 = b.to_detector(source=url, author="abuse.ch", type="url",
+                      match="string", description="Zeus botnet")
+iocs["definitions"].extend(iocs2["definitions"])
+
+url = "https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt"
+b = blacklist.Blacklist()
+b.read_from_url(url)
+iocs2 = b.to_detector(source=url, author="abuse.ch", type="hostname",
+                      match="dns", description="Ransomware")
+iocs["definitions"].extend(iocs2["definitions"])
+
+url = "https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt"
+b = blacklist.Blacklist()
+b.read_from_url(url)
+iocs2 = b.to_detector(source=url, author="abuse.ch", type="ipv4",
+                      match="string", description="Ransomware")
+iocs["definitions"].extend(iocs2["definitions"])
+
+url = "https://ransomwaretracker.abuse.ch/downloads/RW_URLBL.txt"
+b = blacklist.Blacklist()
+b.read_from_url(url)
+iocs2 = b.to_detector(source=url, author="abuse.ch", type="url",
+                      match="string", description="Ransomware")
+iocs["definitions"].extend(iocs2["definitions"])
+
+url = "https://feodotracker.abuse.ch/blocklist/?download=domainblocklist"
+b = blacklist.Blacklist()
+b.read_from_url(url)
+iocs2 = b.to_detector(source=url, author="abuse.ch", type="hostname",
+                      match="dns", description="Feodo malware")
+iocs["definitions"].extend(iocs2["definitions"])
+
+url = "https://feodotracker.abuse.ch/blocklist/?download=ipblocklist"
+b = blacklist.Blacklist()
+b.read_from_url(url)
+iocs2 = b.to_detector(source=url, author="abuse.ch", type="ipv4",
+                      match="string", description="Feodo malware")
+iocs["definitions"].extend(iocs2["definitions"])
+
+print(json.dumps(iocs, indent=4))
