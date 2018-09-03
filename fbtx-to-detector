@@ -1,13 +1,15 @@
 #!/usr/bin/env python3
 
-import facebook
+import fbtx as fb
 import sys
 import json
 import time
 
 creds = json.loads(open("facebook-creds").read())
-fb = facebook.Facebook(creds["id"], creds["secret"])
+fb = fb.Facebook(creds["id"], creds["secret"])
 
+# Facebook threat published ID.
+# FIXME: Not used in this code.
 fbid="820763734618599"
 
 # Last 1 days

@@ -127,6 +127,10 @@ class Threat(Obj):
         if self.indicator.type == "URI": type = "url"
         if self.indicator.type == "USERAGENT": type = "useragent"
 
+        match = "string"
+        if type == "hostname":
+            match = "dns"
+
         # If type not understand, do nothing.
         if type == None: return None
 
@@ -144,14 +148,11 @@ class Threat(Obj):
                 "probability": self.score()
             },
             "operator": "AND",
-            "children": [
-                {
-                    "pattern": {
-                        "match": type,
-                        "value": self.indicator.indicator
-                    }
-                }
-            ]
+            "pattern": {
+                "type": type,
+                "value": self.indicator.indicator,
+                "match": match
+            }
         }
 
         # Add description, if provided
