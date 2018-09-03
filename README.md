@@ -3,6 +3,23 @@
 
 But not enough to be useful.
 
+# OpenIOC
+
+Basic OpenIOC to detector conversion.  Detector doesn't support all OpenIOC
+primitives.
+
+The FireEye APT examples are in `fireeye/`.
+
+```
+$ git clone https://github.com/fireeye/iocs fireeye/
+```
+
+convert to detector format:
+
+```
+$ ./openioc-to-detector > fireeye.json
+```
+
 # Facebook
 
 The file `facebook-creds` contains an API secret, which is taken from the

@@ -44,13 +44,22 @@ detector_mapping = {
     ("DnsEntryItem", "DnsEntryItem/Host", "mir"): {
         "match": "dns", "type": "hostname"
     },
+    ("DnsEntryItem", "DnsEntryItem/RecordName", "mir"): {
+        "match": "dns", "type": "hostname"
+    },
     ("Email", "Email/From", "email"): {
         "match": "string", "type": "email"
+    },
+    ("Network", "Network/URI", "network"): {
+        "match": "substring", "type": "url"
+    },
+    ("Network", "Network/UserAgent", "network"): {
+        "match": "substring", "type": "useragent"
     }
 }
 
 class IndicatorItem(Indicator):
-    def __init__(self, context, content):
+    def __init__(self, id, context, content):
         self.context = context
         self.content = content
     def to_detector(self):
@@ -72,7 +81,7 @@ class IndicatorItem(Indicator):
             }
 
 class CompoundIndicator(Indicator):
-    def __init__(self, operator, indicators):
+    def __init__(self, id, operator, indicators):
         self.operator = operator
         self.indicators = indicators
     def to_dict(self):
@@ -121,17 +130,22 @@ class IocDefinition(Base):
         if authored_date != None:
             self.authored_date = authored_date.text
 
+        self.id = root.attrib["id"]
+
         self.definition = self.decode(defs[0])
 
     def decode(self, elt):
 
         if elt.tag == "{http://schemas.mandiant.com/2010/ioc}Indicator":
+            id = elt.attrib["id"]
             oper = elt.attrib["operator"]
-            return CompoundIndicator(oper, [self.decode(v) for v in elt])
+            return CompoundIndicator(id, oper, [self.decode(v) for v in elt])
         elif elt.tag == "{http://schemas.mandiant.com/2010/ioc}IndicatorItem":
+            id = elt.attrib["id"]
             ctxt = elt.find("ioc:Context", namespaces)
             ctnt = elt.find("ioc:Content", namespaces)
             return IndicatorItem(
+                id,
                 Context(ctxt.attrib["document"],
                         ctxt.attrib["search"],
                         ctxt.attrib["type"]),
@@ -142,4 +156,12 @@ class IocDefinition(Base):
             raise RuntimeError("Require <Indicator> or <IndicatorItem> tag")
 
     def to_detector(self):
-        return self.definition.to_detector()
+        obj = self.definition.to_detector()
+        obj["id"] = self.id
+        obj["indicator"] = {
+            "category": "exploit",
+            "author": "mark.adams@trustnetworks.com",
+            "source": "Trust Networks OpenIOC converter",
+            "probability": 1.0
+        }
+        return obj
