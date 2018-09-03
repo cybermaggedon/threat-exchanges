@@ -20,7 +20,11 @@ Dumps a load of stuff in IOC, and also writes out a detector-style
 IOC file to `all-iocs.json`.
 
 I've put a sample file in `all-iocs.json` so you don't have to run the thing.
-It takes 15 mins to run, you know.
+Because... it takes 15 mins to run, you know.
+
+The IOCs may not all work in `detector` because the risk category is hard-coded
+as `exploit` which is a proposed category in the risk category, not
+implemented.  Also, not all types are used.
 
 ## Look up a domain
 
