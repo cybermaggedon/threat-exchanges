@@ -11,5 +11,6 @@ fb = facebook.Facebook(creds["id"], creds["secret"])
 for v in sys.argv[1:]:
 
     t = fb.get_domain_report(sys.argv[1])
-    print(v + ":", t.to_dict())
+    print("-----------", v)
+    print(json.dumps(t.to_dict(), indent=4))
 
