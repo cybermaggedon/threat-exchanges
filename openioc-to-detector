@@ -1,0 +1,22 @@
+#!/usr/bin/env python3
+
+import json
+import openioc
+import sys
+import os
+
+def do(file, inds):
+    print(file)
+    id = openioc.IocDefinition()
+    id.parse_file(file)
+    inds.append(id.to_detector())
+    
+inds=[]
+
+for dir, subdir, files in os.walk("fireeye"):
+    for file in files:
+        if file.endswith(".ioc"):
+            do(os.path.join(dir, file), inds)
+            print(json.dumps(inds, indent=4))
+            sys.exit(0)
+
