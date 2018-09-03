@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+import facebook
+import sys
+import json
+import time
+
+creds = json.loads(open("facebook-creds").read())
+fb = facebook.Facebook(creds["id"], creds["secret"])
+
+fbid="820763734618599"
+
+# Last 10 days
+since = time.time() - 86400 * 10
+since = time.gmtime(since)
+since = time.strftime("%Y-%m-%dT%H:%M:%S+0000", since)
+
+until = time.time()
+until = time.gmtime(until)
+until = time.strftime("%Y-%m-%dT%H:%M:%S+0000", until)
+        
+inds = fb.get_indicators(limit=1000000)
+
+count = 0
+indicators = []
+
+for v in inds:
+
+    print(count)
+    count += 1
+
+    raw = v.to_dict()
+
+    with open("ioc/%s.json" % v.id, "w") as f:
+        f.write(json.dumps(raw, indent=4))
+        f.close()
+        
+    ioc = v.to_detector_ioc()
+    if ioc == None: continue
+    
+    with open("ioc/%s.det" % v.id, "w") as f:
+        f.write(json.dumps(ioc, indent=4))
+        f.close()
+
+    indicators.append(ioc)
+
+defs = {
+    "version": 3,
+    "description": "Trust Networks IOCs",
+    "definitions": indicators
+}
+
+with open("ioc/all.det", "w") as f:
+    f.write(json.dumps(defs, indent=4))
+    f.close()
+
