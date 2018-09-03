@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+import facebook
+import sys
+import json
+import time
+
+creds = json.loads(open("facebook-creds").read())
+fb = facebook.Facebook(creds["id"], creds["secret"])
+
+for v in sys.argv[1:]:
+
+    t = fb.get_domain_report(sys.argv[1])
+    print(v + ":", t.to_dict())
+

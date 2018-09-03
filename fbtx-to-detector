@@ -10,15 +10,16 @@ fb = facebook.Facebook(creds["id"], creds["secret"])
 
 fbid="820763734618599"
 
-# Last 10 days
-since = time.time() - 86400 * 10
+# Last 1 days
+since = time.time() - 86400 * 1
 since = time.gmtime(since)
 since = time.strftime("%Y-%m-%dT%H:%M:%S+0000", since)
 
 until = time.time()
 until = time.gmtime(until)
 until = time.strftime("%Y-%m-%dT%H:%M:%S+0000", until)
-        
+
+# Get indicators, max 1000000
 inds = fb.get_indicators(limit=1000000)
 
 count = 0
@@ -50,7 +51,7 @@ defs = {
     "definitions": indicators
 }
 
-with open("ioc/all.det", "w") as f:
+with open("all-iocs.json", "w") as f:
     f.write(json.dumps(defs, indent=4))
     f.close()
 
