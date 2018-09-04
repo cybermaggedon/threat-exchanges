@@ -7,9 +7,10 @@ But not enough to be useful.
 
 | | | Accuracy | Expressivity | Applicability |
 |-|-|----------|--------------|---------------|
-| FBTX | Crowd-sourced - User has to work out who to trust | LOW.  The Facebook Admin publisher is more consistent than other publishers.  User has to work out who to trust or not. | LOW.  Can only represent a single term with no boolean logic. | HIGH.  Very easy to consume the terms and work out how to apply. |
+| FBTX | Crowd-sourced - User has to work out who to trust | LOW.  The Facebook Admin publisher is more consistent than other publishers.  User has to work out who to trust or not. | MEDIUM.  Can only represent a single term with no boolean logic. | HIGH.  Very easy to consume the terms and work out how to apply. |
 | OpenIOC | A format, not an exchange | HIGH. Tends to be hand-crafted expressions combining many factors to give low false-positive. | HIGH.  Very powerful language, although many of the terms are specific to specific Mandiant endpoint capabilities. | MEDIUM.  OpenIOC is designed to be used with a particular set of Mandiat capabilities, some terms are very specific to this.  Some rules are specific to endpoint analysis, and can't be applied to network data. |
-| abuse.ch | Variety of automated curation of botnet blocklists | HIGH.  Targeted operation which is accurate against certain botnets. | LOW.  Only botnets which can be blocked through blocklists, although this is fine for the particular applications. | HIGH. Blocklists are very easy to deploy. |
+| abuse.ch | Variety of automated curation of botnet blocklists | HIGH.  Targeted operation which is accurate against certain botnets. | MEDIUM.  Only botnets which can be blocked through blocklists, although this is fine for the particular applications. | HIGH. Blocklists are very easy to consume. |
+| osint.bambenek.com | Variety of automated curation of botnet blocklists | HIGH.  Targeted operation which is accurate against certain botnets. | MEDIUM.  Only botnets which can be blocked through blocklists, although this is fine for the particular applications. | HIGH. Blocklists are very easy to consume. |
 
 # OpenIOC
 
