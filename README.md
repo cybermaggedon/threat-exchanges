@@ -26,7 +26,7 @@ The FireEye APT examples are in `fireeye/`, stolen from
 Convert to detector format:
 
 ```
-$ ./openioc-to-detector > fireeye.json
+$ ./openioc-to-detector
 ```
 
 # abuse.ch

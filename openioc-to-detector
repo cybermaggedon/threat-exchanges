@@ -17,10 +17,15 @@ for dir, subdir, files in os.walk("fireeye"):
         if file.endswith(".ioc"):
             do(os.path.join(dir, file), inds)
 
-defs = {
+iocs = {
     "version": 3,
     "description": "Trust Networks IOCs",
     "definitions": inds
 }
 
-print(json.dumps(defs, indent=4))
+with open("fireeye.json", "w") as f:
+    f.write(json.dumps(iocs, indent=4))
+    f.close()
+
+print("fireeye.json written.")
+
