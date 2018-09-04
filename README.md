@@ -15,15 +15,15 @@ But not enough to be useful.
 # OpenIOC
 
 Basic OpenIOC to detector conversion.  Detector doesn't support all OpenIOC
-primitives.
+primitives.  OpenIOC is really intended to be used in endpoint scenarios
+where the scanner has access to reports from various sources (process list,
+network cache, scanning emails) and can run a rule which accesses all these
+reports.
 
-The FireEye APT examples are in `fireeye/`.
+The FireEye APT examples are in `fireeye/`, stolen from
+`https://github.com/fireeye/iocs`.
 
-```
-$ git clone https://github.com/fireeye/iocs fireeye/
-```
-
-convert to detector format:
+Convert to detector format:
 
 ```
 $ ./openioc-to-detector > fireeye.json
@@ -34,7 +34,15 @@ $ ./openioc-to-detector > fireeye.json
 Collection of malware trackers.
 
 ```
-$ ./abusech-to-detector > abusech.json
+$ ./abusech-to-detector
+```
+
+# URLhaus
+
+Part of abuse.ch.  Collection of malware trackers.
+
+```
+$ ./urlhaus-to-detector
 ```
 
 # Facebook

@@ -3,7 +3,7 @@
     "description": "Trust Networks IOCs",
     "definitions": [
         {
-            "id": "cf933a46-cf44-4f2d-ae4e-a4ba4186760b",
+            "id": "b18a291c-1ffc-47de-a4f5-44ffbe9aca67",
             "indicator": {
                 "category": "exploit",
                 "author": "abuse.ch",
@@ -2662,7 +2662,7 @@
             ]
         },
         {
-            "id": "c171c0a0-436f-4931-9a0c-49f1967e250f",
+            "id": "0a8ec7a3-4c30-41ee-b99c-db36e39f0e67",
             "indicator": {
                 "category": "exploit",
                 "author": "abuse.ch",
@@ -3438,7 +3438,7 @@
             ]
         },
         {
-            "id": "4c1d7c3b-5bd9-43db-ae8a-316b66abbedd",
+            "id": "266475d0-d1a3-4747-b49f-beabd8e8918a",
             "indicator": {
                 "category": "exploit",
                 "author": "abuse.ch",
@@ -3710,7 +3710,7 @@
             ]
         },
         {
-            "id": "07abd4a4-82fe-4927-a897-2768952c440d",
+            "id": "7f3872aa-43fa-4598-ba53-9a5d8a2d3770",
             "indicator": {
                 "category": "exploit",
                 "author": "abuse.ch",
@@ -17044,7 +17044,7 @@
             ]
         },
         {
-            "id": "69ebc58b-180f-4762-bbfd-1e7a0145af45",
+            "id": "abf97016-dc70-4cf3-a991-b8b5a3355736",
             "indicator": {
                 "category": "exploit",
                 "author": "abuse.ch",
@@ -19262,7 +19262,7 @@
             ]
         },
         {
-            "id": "135b8b4a-4c05-463a-91ba-95170b06ce5e",
+            "id": "efc44b07-9940-425b-af87-ed37a967c28e",
             "indicator": {
                 "category": "exploit",
                 "author": "abuse.ch",
@@ -100237,7 +100237,7 @@
             ]
         },
         {
-            "id": "adbb4ddf-3a7b-438c-a9cb-246182127994",
+            "id": "031e7888-d99a-44b8-9464-0189e4c610a6",
             "indicator": {
                 "category": "exploit",
                 "author": "abuse.ch",
@@ -100249,7 +100249,7 @@
             "children": []
         },
         {
-            "id": "56c8c0c7-eed3-48cf-9cab-fc7caee1ee02",
+            "id": "f6245058-894e-48a8-985a-521b1e4380bf",
             "indicator": {
                 "category": "exploit",
                 "author": "abuse.ch",

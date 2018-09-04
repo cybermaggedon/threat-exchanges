@@ -69,3 +69,4 @@ with open("abuse-ch.json", "w") as f:
     f.write(json.dumps(iocs, indent=4))
     f.close()
 
+print("abuse-ch.json written.")
