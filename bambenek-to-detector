@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+
+import bambenek
+import json
+import csv
+import io
+
+url = "http://osint.bambenekconsulting.com/feeds/c2-dommasterlist.txt"
+print(url)
+u = bambenek.Bambenek()
+u.read_from_url(url)
+
+iocs = u.to_detector(source=url, author="osint.bambenekconsulting.com",
+                     description="Bambenek Consulting osint")
+
+url = "http://osint.bambenekconsulting.com/feeds/c2-ipmasterlist.txt"
+print(url)
+u = bambenek.Bambenek()
+u.read_from_url(url)
+
+iocs2 = u.to_detector(source=url, author="osint.bambenekconsulting.com",
+                      description="Bambenek Consulting osint",
+                      match="string", type="ipv4")
+
+iocs["definitions"].extend(iocs2["definitions"])
+
+with open("bambenek.json", "w") as f:
+    f.write(json.dumps(iocs, indent=4))
+    f.close()
+
+print("bambenek.json written.")
