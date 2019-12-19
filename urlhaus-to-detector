@@ -2,8 +2,6 @@
 
 import urlhaus
 import json
-import csv
-import io
 
 url = "https://urlhaus.abuse.ch/downloads/csv/"
 
@@ -14,7 +12,7 @@ iocs = u.to_detector(source=url, author="urlhaus.abuse.ch",
                      description="Urlhaus malware download")
 
 with open("urlhaus.json", "w") as f:
-    f.write(json.dumps(iocs, indent=4))
+    f.write(json.dumps(iocs.dump(), indent=4))
     f.close()
 
 print("urlhaus.json written.")

@@ -3,70 +3,18 @@
 import blacklist
 import json
 
-url = "https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist"
+url = "https://feodotracker.abuse.ch/downloads/ipblocklist_recommended.txt"
 print(url + "...")
 b = blacklist.Blacklist()
 b.read_from_url(url)
-iocs = b.to_detector(source=url, author="abuse.ch", description="Zeus botnet")
+iocs = b.to_indicators(source=url, author="abuse.ch", type="hostname",
+                       description="Feodo malware")
 
-url = "https://zeustracker.abuse.ch/blocklist.php?download=ipblocklist"
-print(url + "...")
-b = blacklist.Blacklist()
-b.read_from_url(url)
-iocs2 = b.to_detector(source=url, author="abuse.ch", type="ipv4",
-                      match="string", description="Zeus botnet")
-iocs["definitions"].extend(iocs2["definitions"])
-
-url = "https://zeustracker.abuse.ch/blocklist.php?download=compromised"
-print(url + "...")
-b = blacklist.Blacklist()
-b.read_from_url(url)
-iocs2 = b.to_detector(source=url, author="abuse.ch", type="url",
-                      match="string", description="Zeus botnet")
-iocs["definitions"].extend(iocs2["definitions"])
-
-url = "https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt"
-print(url + "...")
-b = blacklist.Blacklist()
-b.read_from_url(url)
-iocs2 = b.to_detector(source=url, author="abuse.ch", type="hostname",
-                      match="dns", description="Ransomware")
-iocs["definitions"].extend(iocs2["definitions"])
-
-url = "https://ransomwaretracker.abuse.ch/downloads/RW_IPBL.txt"
-print(url + "...")
-b = blacklist.Blacklist()
-b.read_from_url(url)
-iocs2 = b.to_detector(source=url, author="abuse.ch", type="ipv4",
-                      match="string", description="Ransomware")
-iocs["definitions"].extend(iocs2["definitions"])
-
-url = "https://ransomwaretracker.abuse.ch/downloads/RW_URLBL.txt"
-print(url + "...")
-b = blacklist.Blacklist()
-b.read_from_url(url)
-iocs2 = b.to_detector(source=url, author="abuse.ch", type="url",
-                      match="string", description="Ransomware")
-iocs["definitions"].extend(iocs2["definitions"])
-
-url = "https://feodotracker.abuse.ch/blocklist/?download=domainblocklist"
-print(url + "...")
-b = blacklist.Blacklist()
-b.read_from_url(url)
-iocs2 = b.to_detector(source=url, author="abuse.ch", type="hostname",
-                      match="dns", description="Feodo malware")
-iocs["definitions"].extend(iocs2["definitions"])
-
-url = "https://feodotracker.abuse.ch/blocklist/?download=ipblocklist"
-print(url + "...")
-b = blacklist.Blacklist()
-b.read_from_url(url)
-iocs2 = b.to_detector(source=url, author="abuse.ch", type="ipv4",
-                      match="string", description="Feodo malware")
-iocs["definitions"].extend(iocs2["definitions"])
+obj = iocs.dump()
 
 with open("abuse-ch.json", "w") as f:
-    f.write(json.dumps(iocs, indent=4))
+    f.write(json.dumps(obj, indent=4))
     f.close()
 
 print("abuse-ch.json written.")
+

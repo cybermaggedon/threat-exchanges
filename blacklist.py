@@ -5,6 +5,8 @@
 
 import requests
 import uuid
+from cyberprobe.indicators import Indicator, Indicators, Descriptor
+import cyberprobe.logictree as lt
 
 class Blacklist:
 
@@ -33,43 +35,27 @@ class Blacklist:
             if line[0] == '#': continue
             self.bl.append(line)
 
-    def to_detector(self, match="dns", type="hostname", id=None,
-                    category="exploit", author="mark.adams@trustnetworks.com",
-                    source="TN blacklist conversion", probability=0.8,
-                    description=None):
+    def to_indicators(self, type="hostname",
+                    category="exploit", author=None,
+                    source="Blacklist conversion", prob=0.7,
+                    description=None, version=1):
 
         inds = []
 
         for b in self.bl:
-            ind = {
-                "pattern": {
-                    "type": type,
-                    "match": match,
-                    "value": b
-                }
-            }
-            inds.append(ind)
 
-        if id == None:
-            id = str(uuid.uuid4())
+            des = Descriptor(category=category, author=author,
+                             source=source, prob=prob,
+                             type=type, value=b)
+            if description != None:
+                des.description = description
+            ii = Indicator(des)
+            ii.value = lt.Match(type, b)
+            inds.append(ii)
 
-        inds = {
-            "id": id,
-            "indicator": {
-                "category": category,
-                "author": author,
-                "source": source,
-                "probability": probability
-            },
-            "operator": "OR",
-            "children": inds
-        }
+        i = Indicators(
+            version=version, description="Blacklist",
+            indicators=inds
+        )
 
-        if description != None:
-            inds["indicator"]["description"] = description
-
-        return {
-            "version": 3,
-            "description": "Trust Networks IOCs",
-            "definitions": [inds]
-        }
+        return i

@@ -9,6 +9,9 @@ import io
 import hashlib
 import csv
 
+from cyberprobe.indicators import Indicator, Indicators, Descriptor
+import cyberprobe.logictree as lt
+
 class UrlHaus:
 
     def __init__(self):
@@ -27,9 +30,9 @@ class UrlHaus:
         for line in reader:
             self.bl.append(line)
 
-    def to_detector(self, match="dns", type="hostname",
-                    category="exploit", author="mark.adams@trustnetworks.com",
-                    source="TN blacklist conversion", probability=0.8,
+    def to_detector(self, type="hostname",
+                    category="exploit", author=None,
+                    source="Blacklist conversion", prob=0.7,
                     description=None):
 
         inds = []
@@ -41,35 +44,20 @@ class UrlHaus:
             
             url = b[2]
 
-            ind = {
-                "pattern": {
-                    "type": "url",
-                    "match": "string",
-                    "value": b[2]
-                }
-            }
-
             h = hashlib.new('md5')
             h.update(("urlhaus:" + url).encode("utf-8"))
             id = h.hexdigest()
 
-            ind = {
-                "id": id,
-                "indicator": {
-                    "category": category,
-                    "author": author,
-                    "source": source,
-                    "probability": probability,
-                    "description": "URLhaus %s, see %s" % (b[4], b[6])
-                },
-                "operator": "OR",
-                "children": [ind]
-            }
+            des = Descriptor(category=category, author=author,
+                             source=source, prob=prob,
+                             type=type, value=b)
+            if description != None:
+                des.description = description
+            ii = Indicator(des, id)
+            ii.value = lt.Match(type, b)
+            inds.append(ii)
 
-            inds.append(ind)
+        return Indicators(version=1, 
+                          description="Urlhaus IOCs",
+                          indicators=inds)
 
-        return {
-            "version": 3,
-            "description": "Trust Networks IOCs",
-            "definitions": [inds]
-        }

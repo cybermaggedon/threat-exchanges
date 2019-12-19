@@ -20,12 +20,13 @@ u.read_from_url(url)
 
 iocs2 = u.to_detector(source=url, author="osint.bambenekconsulting.com",
                       description="Bambenek Consulting osint",
-                      match="string", type="ipv4")
+                      type="ipv4")
 
-iocs["definitions"].extend(iocs2["definitions"])
+iocs.indicators.extend(iocs2.indicators)
 
 with open("bambenek.json", "w") as f:
-    f.write(json.dumps(iocs, indent=4))
+    f.write(json.dumps(iocs.dump(), indent=4))
     f.close()
 
 print("bambenek.json written.")
+

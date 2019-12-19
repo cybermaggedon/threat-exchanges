@@ -8,6 +8,8 @@ import uuid
 import io
 import hashlib
 import csv
+from cyberprobe.indicators import Indicator, Indicators, Descriptor
+import cyberprobe.logictree as lt
 
 class Bambenek:
 
@@ -29,7 +31,7 @@ class Bambenek:
 
     def to_detector(self, match="dns", type="hostname",
                     category="exploit", author="osint.bambenekconsulting.com",
-                    source="TN blacklist conversion", probability=0.8,
+                    source="Blacklist conversion", prob=0.7,
                     description=None):
 
         inds = []
@@ -41,35 +43,18 @@ class Bambenek:
             
             value = b[0]
 
-            ind = {
-                "pattern": {
-                    "type": type,
-                    "match": match,
-                    "value": value
-                }
-            }
+            des = Descriptor(category=category, author=author, source=source,
+                             prob=prob, type=type, value=value)
 
             h = hashlib.new('md5')
             h.update(("bamabenek:" + value).encode("utf-8"))
             id = h.hexdigest()
 
-            ind = {
-                "id": id,
-                "indicator": {
-                    "category": category,
-                    "author": author,
-                    "source": source,
-                    "probability": probability,
-                    "description": b[1]
-                },
-                "operator": "OR",
-                "children": [ind]
-            }
+            ind = Indicator(des, id)
+
+            ind.value = lt.Match(type=type, value=value)
 
             inds.append(ind)
 
-        return {
-            "version": 3,
-            "description": "Trust Networks IOCs",
-            "definitions": [inds]
-        }
+        return Indicators(version=1, description="Bambenek IOCs",
+                          indicators=inds)
