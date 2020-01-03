@@ -37,16 +37,15 @@ class MispParser:
         config = json.load(open(sys.argv[1]))
         return cls(config)
 
-    
+
     def to_indicators(self, limit=10000000):
 
-        inds = []
         page=1
         count = 0
 
         while count < limit:
 
-            res = self.misp.search("attributes",  limit=5000,
+            res = self.misp.search("attributes",  limit=20000,
                                    page=page, category=self.category,
                                    type_attribute=self.type)
 
@@ -81,7 +80,7 @@ class MispParser:
                         stype = "url"
 
                     else:
-                    
+
                         sval = "https://" + value
                         stype = "url"
                         bval = Or([
@@ -112,13 +111,15 @@ class MispParser:
 
                 if stype != None:
 
-                    des = Descriptor(category="exploit", author="n/a",
+                    des = Descriptor(category="exploit",
+                                     description=info,
+                                     author="n/a",
                                      source=self.url, prob=1.0,
                                      type=stype, value=sval)
                     ii = Indicator(des)
                     ii.value = bval
 
-                    inds.append(ii)
+                    yield ii
 
                     count += 1
                     if count >= limit:
@@ -126,13 +127,19 @@ class MispParser:
 
             page += 1
 
-        i = Indicators(version="1", description="MISP",
-                       indicators=inds)
-
-        return i
-
 m = MispParser.from_config(sys.argv[1])
 
-i = m.to_indicators()
+print('{')
+print('"version": "1",')
+print('"description": "MISP",')
+print('"indicators": [')
 
-print(json.dumps(i.dump(), indent=4))
+sep = ""
+for i in m.to_indicators():
+    print(sep)
+    sep =","
+    print(json.dumps(i.dump()))
+
+print(']')
+print('}')
+
