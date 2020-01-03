@@ -1,0 +1,138 @@
+#!/usr/bin/env python3
+
+# Config file has format:
+# {
+#     "token": "...",
+#     "url": "http://whatver"
+# }
+
+import pymisp
+import json
+import time
+import csv
+import sys
+import re
+from cyberprobe.indicators import Indicator, Indicators, Descriptor
+from cyberprobe.logictree import Match, And, Or, Not
+
+if len(sys.argv) != 2:
+    print("Usage:")
+    print("  misp-to-detector <config>")
+    sys.exit(1)
+
+class MispParser:
+
+    def __init__(self, dict):
+        self.category = ["Network activity"]
+        self.type = ["hostname", "ip-src", "ip-dst", "ip-src|port",
+                     "ip-dest|port", "domain", "domain|ip",
+                     "url", "uri"]
+        for v in dict:
+            setattr(self, v, dict[v])
+        self.misp = pymisp.ExpandedPyMISP(self.url, self.token)
+
+    @classmethod
+    def from_config(cls, path):
+
+        config = json.load(open(sys.argv[1]))
+        return cls(config)
+
+    
+    def to_indicators(self, limit=10000000):
+
+        inds = []
+        page=1
+        count = 0
+
+        while count < limit:
+
+            res = self.misp.search("attributes",  limit=5000,
+                                   page=page, category=self.category,
+                                   type_attribute=self.type)
+
+            if "Attribute" not in res:
+                raise RuntimeError("No Attribute result?!")
+
+            # End of results
+            if len(res["Attribute"]) == 0: break
+
+            for attr in res["Attribute"]:
+
+                info = attr["Event"]["info"]
+                comment = attr["comment"]
+                category = attr["category"]
+                type = attr["type"]
+                value = attr["value"]
+
+                stype = None
+
+                if type == "domain" or type == "hostname":
+
+                    bval = Match("hostname", value)
+                    sval = value
+                    stype = "hostname"
+
+                elif type == "url" or type == "uri":
+
+                    if value.startswith("http://") or value.startswith("https://"):
+
+                        bval = Match("url", value)
+                        sval = value
+                        stype = "url"
+
+                    else:
+                    
+                        sval = "https://" + value
+                        stype = "url"
+                        bval = Or([
+                            Match("url", "http://" + value),
+                            Match("url", "https://" + value)
+                        ])
+
+                elif type == "ip-src" or type == "ip-dst":
+
+                    if re.match(r"[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$",
+                                value) == None:
+
+                        if type == "ip-src":
+                            bval = Match("ipv6.src", value)
+                        else:
+                            bval = Match("ipv6.dest", value)
+                        sval = value
+                        stype = "ipv6"
+
+                    else:
+
+                        if type == "ip-src":
+                            bval = Match("ipv4.src", value)
+                        else:
+                            bval = Match("ipv4.dest", value)
+                        sval = value
+                        stype = "ipv4"
+
+                if stype != None:
+
+                    des = Descriptor(category="exploit", author="n/a",
+                                     source=self.url, prob=1.0,
+                                     type=stype, value=sval)
+                    ii = Indicator(des)
+                    ii.value = bval
+
+                    inds.append(ii)
+
+                    count += 1
+                    if count >= limit:
+                        break
+
+            page += 1
+
+        i = Indicators(version="1", description="MISP",
+                       indicators=inds)
+
+        return i
+
+m = MispParser.from_config(sys.argv[1])
+
+i = m.to_indicators()
+
+print(json.dumps(i.dump(), indent=4))
