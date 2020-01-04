@@ -27,6 +27,7 @@ class MispParser:
         self.type = ["hostname", "ip-src", "ip-dst", "ip-src|port",
                      "ip-dest|port", "domain", "domain|ip",
                      "url", "uri"]
+        self.to_ids = True
         for v in dict:
             setattr(self, v, dict[v])
         self.misp = pymisp.ExpandedPyMISP(self.url, self.token)
@@ -37,31 +38,79 @@ class MispParser:
         config = json.load(open(sys.argv[1]))
         return cls(config)
 
+    def chunked(self, x, n=5):
+        for i in range(0, len(x), n):
+            yield x[i:i+n]
 
-    def to_indicators(self, limit=10000000):
+    def get_events(self):
+
+        evs = []
+        page=1
+        sys.stderr.write("Page: ")
+        sys.stderr.flush()
+
+        while True:
+            sys.stderr.write(f"{page} ")
+            sys.stderr.flush()
+            events = self.misp.search("events", limit=25, page=page,
+                                      metadata=True)
+            if len(events) == 0: break
+            evs.extend([ev['Event']['uuid'] for ev in events])
+            page=page+1
+        sys.stderr.write(f'\nGot {len(evs)} events.\n')
+        return evs
+
+    def get_attributes(self, evids):
 
         page=1
-        count = 0
+        while True:
 
-        while count < limit:
-
-            res = self.misp.search("attributes",  limit=20000,
-                                   page=page, category=self.category,
-                                   type_attribute=self.type)
+            res = self.misp.search("attributes", eventid=evids,
+                                   category=self.category,
+                                   type_attribute=self.type,
+                                   to_ids=self.to_ids, page=page, limit=15000)
 
             if "Attribute" not in res:
                 raise RuntimeError("No Attribute result?!")
 
-            # End of results
-            if len(res["Attribute"]) == 0: break
+            if len(res["Attribute"]) == 0:
+                break
 
             for attr in res["Attribute"]:
+                yield attr
+
+            page += 1
+
+    def to_indicators(self, limit=10000000):
+
+        sys.stderr.write("Getting event IDs...\n")
+        events = self.get_events()
+        sys.stderr.write("Done.\n")
+
+        count = 0
+
+        blip=2500
+        skip=blip
+
+        sys.stderr.write("Getting attributes...\n")
+
+        for evb in self.chunked(events, 5):
+
+            attrs = self.get_attributes(evb)
+
+            for attr in attrs:
+
+                while count >= blip:
+                    sys.stderr.write(f"{blip} ")
+                    sys.stderr.flush()
+                    blip += skip
 
                 info = attr["Event"]["info"]
                 comment = attr["comment"]
                 category = attr["category"]
                 type = attr["type"]
                 value = attr["value"]
+                uuid = attr["uuid"]
 
                 stype = None
 
@@ -116,7 +165,7 @@ class MispParser:
                                      author="n/a",
                                      source=self.url, prob=1.0,
                                      type=stype, value=sval)
-                    ii = Indicator(des)
+                    ii = Indicator(des, id=uuid)
                     ii.value = bval
 
                     yield ii
@@ -125,7 +174,8 @@ class MispParser:
                     if count >= limit:
                         break
 
-            page += 1
+        sys.stderr.write("Done.\n")
+        sys.stderr.write(f"{count} events.\n")
 
 m = MispParser.from_config(sys.argv[1])
 
