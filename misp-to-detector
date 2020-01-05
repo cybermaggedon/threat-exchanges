@@ -57,7 +57,8 @@ class MispParser:
             if len(events) == 0: break
             evs.extend([ev['Event']['uuid'] for ev in events])
             page=page+1
-        sys.stderr.write(f'\nGot {len(evs)} events.\n')
+
+        sys.stderr.write('\n')
         return evs
 
     def get_attributes(self, evids):
@@ -77,6 +78,8 @@ class MispParser:
                 break
 
             for attr in res["Attribute"]:
+#                print(attr)
+#                sys.exit(0)
                 yield attr
 
             page += 1
@@ -86,6 +89,7 @@ class MispParser:
         sys.stderr.write("Getting event IDs...\n")
         events = self.get_events()
         sys.stderr.write("Done.\n")
+        sys.stderr.write(f'Got {len(events)} events.\n')
 
         count = 0
 
@@ -174,7 +178,7 @@ class MispParser:
                     if count >= limit:
                         break
 
-        sys.stderr.write("Done.\n")
+        sys.stderr.write("\nDone.\n")
         sys.stderr.write(f"{count} events.\n")
 
 m = MispParser.from_config(sys.argv[1])
