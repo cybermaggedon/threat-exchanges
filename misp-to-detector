@@ -55,7 +55,7 @@ class MispParser:
             events = self.misp.search("events", limit=25, page=page,
                                       metadata=True)
             if len(events) == 0: break
-            evs.extend([ev['Event']['uuid'] for ev in events])
+            evs.extend([ev['Event'] for ev in events])
             page=page+1
 
         sys.stderr.write('\n')
@@ -93,14 +93,14 @@ class MispParser:
 
         count = 0
 
-        blip=2500
+        blip=25000
         skip=blip
 
         sys.stderr.write("Getting attributes...\n")
 
-        for evb in self.chunked(events, 5):
+        for ev in events:
 
-            attrs = self.get_attributes(evb)
+            attrs = self.get_attributes([ev["uuid"]])
 
             for attr in attrs:
 
@@ -115,6 +115,10 @@ class MispParser:
                 type = attr["type"]
                 value = attr["value"]
                 uuid = attr["uuid"]
+                if "event_creator_email" in ev:
+                    author = ev["event_creator_email"]
+                else:
+                    author = ev["Orgc"]["name"]
 
                 stype = None
 
@@ -166,7 +170,7 @@ class MispParser:
 
                     des = Descriptor(category="exploit",
                                      description=info,
-                                     author="n/a",
+                                     author=author,
                                      source=self.url, prob=1.0,
                                      type=stype, value=sval)
                     ii = Indicator(des, id=uuid)
@@ -179,7 +183,7 @@ class MispParser:
                         break
 
         sys.stderr.write("\nDone.\n")
-        sys.stderr.write(f"{count} events.\n")
+        sys.stderr.write(f"{count} indicators.\n")
 
 m = MispParser.from_config(sys.argv[1])
 
